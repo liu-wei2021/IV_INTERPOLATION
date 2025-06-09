@@ -1,6 +1,7 @@
+# src/database/connection.py - Enhanced version
 import psycopg2
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, Optional
 import logging
 from config import DatabaseConfig
 
@@ -11,6 +12,7 @@ class DatabaseManager:
     
     def __init__(self, db_config: DatabaseConfig):
         self.db_config = db_config
+        self._connection_string = None
         self._test_connection()
     
     def _test_connection(self):
@@ -23,6 +25,16 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Database connection failed: {e}")
             raise
+    
+    @property
+    def connection_string(self) -> str:
+        """Get SQLAlchemy-compatible connection string"""
+        if self._connection_string is None:
+            self._connection_string = (
+                f"postgresql://{self.db_config.user}:{self.db_config.password}"
+                f"@{self.db_config.host}:{self.db_config.port}/{self.db_config.database}"
+            )
+        return self._connection_string
     
     @contextmanager
     def get_connection(self) -> Generator[psycopg2.extensions.connection, None, None]:
@@ -39,6 +51,15 @@ class DatabaseManager:
         finally:
             if conn:
                 conn.close()
+    
+    def get_pandas_connection(self):
+        """Get connection optimized for pandas operations"""
+        try:
+            from sqlalchemy import create_engine
+            return create_engine(self.connection_string, pool_pre_ping=True)
+        except ImportError:
+            logger.warning("SQLAlchemy not available, using psycopg2 connection")
+            return self.get_connection()
     
     def execute_query(self, query: str, params=None, fetch: bool = False):
         """Execute a query with optional parameters"""

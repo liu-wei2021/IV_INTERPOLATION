@@ -1,3 +1,4 @@
+# src/database/schema.py
 from database.connection import DatabaseManager
 import logging
 
@@ -51,18 +52,19 @@ class SchemaManager:
         );
         """
         
+        # Separate index creation without CONCURRENTLY (Windows/transaction compatible)
         create_indexes_sql = """
-        -- Performance indexes
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_interp_symbol_date 
+        -- Performance indexes (removed CONCURRENTLY for Windows compatibility)
+        CREATE INDEX IF NOT EXISTS idx_interp_symbol_date 
         ON interpolated_trading_tickers(symbol, date);
         
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_interp_date 
+        CREATE INDEX IF NOT EXISTS idx_interp_date 
         ON interpolated_trading_tickers(date);
         
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_interp_symbol 
+        CREATE INDEX IF NOT EXISTS idx_interp_symbol 
         ON interpolated_trading_tickers(symbol);
         
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_interp_batch 
+        CREATE INDEX IF NOT EXISTS idx_interp_batch 
         ON interpolated_trading_tickers(batch_id);
         """
         
@@ -73,11 +75,11 @@ class SchemaManager:
             logger.info("Creating indexes...")
             self.db_manager.execute_query(create_indexes_sql)
             
-            logger.info("✅ Database schema created successfully")
+            logger.info("SUCCESS: Database schema created successfully")
             return True
             
         except Exception as e:
-            logger.error(f"❌ Schema creation failed: {e}")
+            logger.error(f"FAILED: Schema creation failed: {e}")
             return False
     
     def create_progress_table(self) -> bool:
@@ -109,9 +111,9 @@ class SchemaManager:
         try:
             logger.info("Creating progress tracking table...")
             self.db_manager.execute_query(progress_table_sql)
-            logger.info("✅ Progress table created successfully")
+            logger.info("SUCCESS: Progress table created successfully")
             return True
             
         except Exception as e:
-            logger.error(f"❌ Progress table creation failed: {e}")
+            logger.error(f"FAILED: Progress table creation failed: {e}")
             return False

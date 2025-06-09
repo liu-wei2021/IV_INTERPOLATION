@@ -1,46 +1,22 @@
-"""
+# Core data processing
 pandas>=1.5.0
 numpy>=1.24.0
-psycopg2-binary>=2.9.0
 scipy>=1.10.0
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Performance and parallelization
 numba>=0.56.0
 joblib>=1.2.0
+
+# Utilities
 python-dateutil>=2.8.0
 pytz>=2022.1
-"""
+python-dotenv>=1.0.0
 
-print("""
-🎯 MODULAR PROJECT STRUCTURE BENEFITS:
-
-✅ MAINTAINABILITY
-- Easy to find and fix issues
-- Clear separation of concerns
-- Professional code organization
-
-✅ TESTABILITY  
-- Test individual components
-- Mock database connections
-- Unit test interpolation logic
-
-✅ SCALABILITY
-- Add Task 2 (candles) easily
-- Add new interpolation methods
-- Extend monitoring capabilities
-
-✅ COLLABORATION
-- Multiple people can work on different parts
-- Clear interfaces between components
-- Code reviews are easier
-
-✅ DEPLOYMENT
-- Environment-specific configurations
-- Easy to package and deploy
-- Professional DevOps practices
-
-RECOMMENDED WORKFLOW:
-1. Create the folder structure
-2. Start with config.py and database/ modules
-3. Build interpolation/ core logic
-4. Add monitoring and main.py
-5. Test incrementally as you build
-""")
+# Development tools (optional)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+black>=22.0.0
+flake8>=5.0.0
